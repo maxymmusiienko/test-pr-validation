@@ -22,5 +22,5 @@ jobs:
           deployment_id: ${{ secrets.DEPLOYMENT_ID }}
           key: ${{ secrets.KEY }}
           model: ${{ secrets.MODEL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
