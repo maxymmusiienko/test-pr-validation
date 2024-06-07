@@ -16,5 +16,10 @@ jobs:
         id: pragent
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          api_base: ${{ secrets.API_BASE }}
+          api_key: ${{ secrets.API_KEY }}
+          api_version: ${{ secrets.API_VERSION }}
+          deployment_id: ${{ secrets.DEPLOYMENT_ID }}
+          key: ${{ secrets.KEY }}
+          model: ${{ secrets.MODEL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
