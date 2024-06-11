@@ -16,6 +16,7 @@ public class GarbageCollectorImplementation implements GarbageCollector {
     @Override
     public List<ApplicationBean> collect(HeapInfo heap, StackInfo stack) {
         markedBeans.clear();
+        System.out.println("cleared");
         stack.getStack().forEach(frame -> frame.getParameters().forEach(this::mark));
 
         List<ApplicationBean> garbage = new ArrayList<>();
@@ -48,5 +49,9 @@ public class GarbageCollectorImplementation implements GarbageCollector {
                 }
             });
         }
+    }
+
+    private int g() {
+        return 5;
     }
 }
