@@ -1,6 +1,7 @@
 package net.broscorp.gcimpl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -15,25 +16,34 @@ public class GarbageCollectorImplementation implements GarbageCollector {
         Set<ApplicationBean> reachableObjects = new HashSet<>();
         Deque<ApplicationBean> stackDeque = new LinkedList<>();
 
-        for (StackInfo.Frame frame : stack.getStack()) {
-            for (ApplicationBean parameter : frame.getParameters()) {
-                stackDeque.push(parameter);
-                while (!stackDeque.isEmpty()) {
-                    ApplicationBean currentBean = stackDeque.pop();
-                    if (currentBean != null && !reachableObjects.contains(currentBean)) {
-                        reachableObjects.add(currentBean);
-                        stackDeque.addAll(currentBean.getFieldValues().values());
-                    }
-                }
-            }
-        }
-
-        for (ApplicationBean bean : heap.getBeans().values()) {
-            if (!reachableObjects.contains(bean)) {
-                unreachableObjects.add(bean);
-            }
-        }
+        registerApplicationBeans(stackDeque, stack);
+        findReachableObjects(stackDeque, reachableObjects);
+        filterUnreachableObjects(unreachableObjects, heap.getBeans().values(), reachableObjects);
 
         return unreachableObjects;
+    }
+
+    private void registerApplicationBeans(Deque<ApplicationBean> stackDeque,
+                                          StackInfo stack) {
+        for (StackInfo.Frame frame : stack.getStack()) {
+            stackDeque.addAll(frame.getParameters());
+        }
+    }
+
+    private void findReachableObjects(Deque<ApplicationBean> stackDeque,
+                                      Set<ApplicationBean> reachableObjects) {
+        while (!stackDeque.isEmpty()) {
+            ApplicationBean currentBean = stackDeque.pop();
+            if (currentBean != null && reachableObjects.add(currentBean)) {
+                stackDeque.addAll(currentBean.getFieldValues().values());
+            }
+        }
+    }
+
+    private void filterUnreachableObjects(List<ApplicationBean> unreachableObjects,
+                                          Collection<ApplicationBean> beans,
+                                          Set<ApplicationBean> reachableObjects) {
+        unreachableObjects.addAll(beans);
+        unreachableObjects.removeAll(reachableObjects);
     }
 }
