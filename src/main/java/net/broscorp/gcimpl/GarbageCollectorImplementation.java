@@ -12,6 +12,9 @@ public class GarbageCollectorImplementation implements GarbageCollector {
 
     @Override
     public List<ApplicationBean> collect(HeapInfo heap, StackInfo stack) {
+        if (heap == null || stack == null) {
+            throw new IllegalArgumentException("Heap and Stack must not be null");
+        }
         List<ApplicationBean> reachableObjects = new ArrayList<>();
         Set<ApplicationBean> visited = new HashSet<>();
 
@@ -28,11 +31,12 @@ public class GarbageCollectorImplementation implements GarbageCollector {
 
     private void markReachable(ApplicationBean obj, List<ApplicationBean> reachableObjects,
                                Map<String, ApplicationBean> heap, Set<ApplicationBean> visited) {
-        Deque<ApplicationBean> stack = new LinkedList<>();
-        stack.push(obj);
+        Set<ApplicationBean> processingStack = new HashSet<>();
+        processingStack.add(obj);
 
-        while (!stack.isEmpty()) {
-            ApplicationBean current = stack.pop();
+        while (!processingStack.isEmpty()) {
+            ApplicationBean current = processingStack.iterator().next();
+            processingStack.remove(current);
             if (visited.contains(current)) {
                 continue;
             }
@@ -41,7 +45,7 @@ public class GarbageCollectorImplementation implements GarbageCollector {
 
             for (ApplicationBean child : current.getFieldValues().values()) {
                 if (heap.containsValue(child)) {
-                    stack.push(child);
+                    processingStack.add(child);
                 }
             }
         }
